@@ -1,0 +1,24 @@
+---
+- name: Install system packages
+  become: yes
+  apt:
+    pkg:
+      - net-tools
+      - neofetch
+    state: present
+    update_cache: yes
+
+- name: Set hostname
+  become: yes
+  template:
+    src: hostname.j2
+    dest: /etc/hostname
+
+- name: Install pip
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Install psutil
+  pip:
+    name: psutil

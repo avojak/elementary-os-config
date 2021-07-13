@@ -1,0 +1,7 @@
+---
+- name: Generate OpenSSH keypair
+  openssh_keypair:
+    path: "/home/{{ user_name }}/.ssh/id_rsa"
+    owner: "{{ user_name }}"
+    group: "{{ user_group }}"
+  notify: add github ssh key

@@ -1,0 +1,14 @@
+---
+- name: Install package
+  become: yes
+  apt:
+    name: vim
+    state: present
+
+- name: Copy config
+  become: yes
+  template:
+    src: .vimrc.j2
+    dest: "/home/{{ user_name }}/.vimrc"
+    owner: "{{ user_name }}"
+    group: "{{ user_group }}"

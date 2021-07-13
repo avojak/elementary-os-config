@@ -1,0 +1,10 @@
+---
+- import_playbook: playbook.yml
+- name: elementary OS VM Configuration
+  gather_facts: true
+  hosts: all
+  tasks:
+    - name: Install VMWare tools
+      apt:
+        name: open-vm-tools-desktop
+        state: present

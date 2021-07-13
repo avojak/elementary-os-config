@@ -1,0 +1,30 @@
+---
+- name: elementary OS Configuration
+  gather_facts: true
+  hosts: all
+  roles:
+    - base
+    - openssh
+    - git
+    - vim
+    - firefox
+    - flatpak
+    - elementary-developer
+    - elementary-config
+    - vscode
+    - role: gantsign.visual-studio-code-extensions
+      users:
+        - username: "{{ user_name }}"
+          visual_studio_code_extensions:
+            - prince781.vala
+            - ms-azuretools.vscode-docker
+            - mrorz.language-gettext
+            - asabil.meson
+            - surajbarkale.ninja
+            - ms-python.python
+  vars:
+    user_name: avojak
+    user_group: avojak
+    user_full_name: Andrew Vojak
+    user_email_address: andrew.vojak@gmail.com
+    hostname: avojak-elementaryOS

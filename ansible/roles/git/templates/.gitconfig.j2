@@ -1,0 +1,12 @@
+[user]
+	email = "{{ user_email_address }}"
+	name = "{{ user_full_name }}"
+[color]
+	ui = auto
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = master

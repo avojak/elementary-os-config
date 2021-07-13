@@ -1,0 +1,28 @@
+---
+- name: Install GPG key
+  become: yes
+  apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+
+- name: Add repository
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/repos/code stable main
+    state: present
+
+- name: Install packages
+  become: yes
+  apt:
+    pkg:
+      - apt-transport-https
+      - code
+    state: present
+    update_cache: yes
+
+#  snap:
+#    name: code
+#    classic: yes
+#  flatpak:
+#    name: com.visualstudio.code
+#    state: present
+#    remote: flathub
