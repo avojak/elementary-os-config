@@ -1,6 +1,0 @@
----
-- name: Install package
-  become: yes
-  apt:
-    name: firefox
-    state: present

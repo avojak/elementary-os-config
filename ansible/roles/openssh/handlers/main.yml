@@ -1,3 +1,0 @@
----
-- name: add github ssh key
-  shell: firefox https://github.com/settings/keys &

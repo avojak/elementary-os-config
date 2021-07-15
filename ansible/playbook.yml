@@ -2,29 +2,107 @@
 - name: elementary OS Configuration
   gather_facts: true
   hosts: all
-  roles:
-    - base
-    - openssh
-    - git
-    - vim
-    - firefox
-    - flatpak
-    - elementary-developer
-    - elementary-config
-    - vscode
-    - role: gantsign.visual-studio-code-extensions
-      users:
-        - username: "{{ user_name }}"
-          visual_studio_code_extensions:
-            - prince781.vala
-            - ms-azuretools.vscode-docker
-            - mrorz.language-gettext
-            - asabil.meson
-            - surajbarkale.ninja
-            - ms-python.python
+  tasks:
+    # System configuration
+    - name: Set hostname
+      become: yes
+      template:
+        src: hostname.j2
+        dest: /etc/hostname
+    - name: Generate OpenSSH keypair
+      openssh_keypair:
+        path: "/home/{{ user_name }}/.ssh/id_rsa"
+        owner: "{{ user_name }}"
+        group: "{{ user_group }}"
+      notify: add github ssh key
+
+    # Application installation pre-requisites
+    - name: Install Microsoft GPG key
+      become: yes
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+    - name: Add VSCode Debian repository
+      apt_repository:
+        repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/repos/code stable main
+        state: present
+
+    # Install applications
+    - name: Install apt packages
+      become: yes
+      apt:
+        pkg:
+          - apt-transport-https
+          - code
+          - elementary-sdk
+          - firefox
+          - git
+          - meson
+          - net-tools
+          - neofetch
+          - python3-pip
+          - vim
+        state: present
+        update_cache: yes
+    - name: Install pip packages
+      pip:
+        name: psutil
+
+    # Configure applications
+    - name: Configure git
+      template:
+        src: .gitconfig.j2
+        dest: "/home/{{ user_name }}/.gitconfig"
+        owner: "{{ user_name }}"
+        group: "{{ user_group }}"
+    - name: Configure vim
+      become: yes
+      template:
+        src: .vimrc.j2
+        dest: "/home/{{ user_name }}/.vimrc"
+        owner: "{{ user_name }}"
+        group: "{{ user_group }}"
+    - name: Add Flathub remote
+      flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+    - name: Install VSCode extensions
+      include_role:
+        name: gantsign.visual-studio-code-extensions
+
+    # Configure user settings
+    - name: Use category view in applications menu
+      become_user: "{{ user_name }}"
+      dconf:
+        key: "/io/elementary/desktop/wingpanel/applications-menu/use-category"
+        value: "true"
+        state: present
+    - name: Use AM/PM date format (1)
+      become_user: "{{ user_name }}"
+      dconf:
+        key: "/org/gnome/desktop/interface/clock-format"
+        value: "'12h'"
+        state: present
+    - name: Use AM/PM date format (2)
+      become_user: "{{ user_name }}"
+      dconf:
+        key: "/io/elementary/desktop/wingpanel/datetime/clock-format"
+        value: "'12h'"
+        state: present
+
   vars:
     user_name: avojak
     user_group: avojak
     user_full_name: Andrew Vojak
     user_email_address: andrew.vojak@gmail.com
     hostname: avojak-elementaryOS
+    users:
+      - username: "{{ user_name }}"
+        visual_studio_code_extensions:
+          - prince781.vala
+          - ms-azuretools.vscode-docker
+          - mrorz.language-gettext
+          - asabil.meson
+          - surajbarkale.ninja
+          - ms-python.python

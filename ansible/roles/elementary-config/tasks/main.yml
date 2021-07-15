@@ -1,7 +1,0 @@
----
-- name: Use category view in applications menu
-  become_user: "{{ user_name }}"
-  dconf:
-    key: "/io/elementary/desktop/wingpanel/applications-menu/use-category"
-    value: 'true'
-    state: present

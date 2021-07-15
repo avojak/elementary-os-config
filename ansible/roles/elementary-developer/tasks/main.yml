@@ -1,8 +1,0 @@
----
-- name: Install packages
-  become: yes
-  apt:
-    pkg:
-      - meson
-      - elementary-sdk
-    state: present
