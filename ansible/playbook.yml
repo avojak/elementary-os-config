@@ -23,9 +23,21 @@
         url: https://packages.microsoft.com/keys/microsoft.asc
         state: present
     - name: Add VSCode Debian repository
+      become: yes
       apt_repository:
         repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/repos/code stable main
         state: present
+    - name: Install Docker GPG key
+      become: yes
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add Docker Debian repository
+      become: yes
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
 
     # Install applications
     - name: Install apt packages
@@ -34,6 +46,10 @@
         pkg:
           - apt-transport-https
           - code
+          - containerd.io
+          - curl
+          - docker-ce
+          - docker-ce-cli
           - elementary-sdk
           - firefox
           - git
@@ -90,6 +106,14 @@
         key: "/io/elementary/desktop/wingpanel/datetime/clock-format"
         value: "'12h'"
         state: present
+    
+    # User configuration
+    - name: Add user to docker group
+      become: yes
+      user:
+        name: "{{ user_name }}"
+        groups: docker
+        append: yes
 
   vars:
     user_name: avojak
