@@ -86,6 +86,8 @@
     - name: Install VSCode extensions
       include_role:
         name: gantsign.visual-studio-code-extensions
+        apply:
+          become: yes
 
     # Configure user settings
     - name: Use category view in applications menu
