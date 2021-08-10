@@ -9,6 +9,11 @@
       template:
         src: hostname.j2
         dest: /etc/hostname
+    - name: Create ~/.ssh directory
+      file:
+        path: "/home/{{ user_name }}/.ssh"
+        state: directory
+        mode: '0755'
     - name: Generate OpenSSH keypair
       openssh_keypair:
         path: "/home/{{ user_name }}/.ssh/id_rsa"
