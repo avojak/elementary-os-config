@@ -19,7 +19,7 @@
         path: "/home/{{ user_name }}/.ssh/id_rsa"
         owner: "{{ user_name }}"
         group: "{{ user_group }}"
-      notify: add github ssh key
+      #notify: add github ssh key
 
     # Application installation pre-requisites
     - name: Install Microsoft GPG key
