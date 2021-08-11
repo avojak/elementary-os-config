@@ -5,6 +5,7 @@
   hosts: all
   tasks:
     - name: Install VMWare tools
+      become: yes
       apt:
         name: open-vm-tools-desktop
         state: present
