@@ -21,7 +21,7 @@
         group: "{{ user_group }}"
       #notify: add github ssh key
 
-    # Application installation pre-requisites
+    # Application and package installation pre-requisites
     - name: Install Microsoft GPG key
       become: yes
       apt_key:
@@ -42,15 +42,19 @@
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
+    - name: Add Monitor PPA
+      become: yes
+      apt_repository:
+        repo: ppa:stsdc/monitor
 
-
-    # Install applications
+    # Install applications and packages
     - name: Install apt packages
       become: yes
       apt:
         pkg:
           - apt-transport-https
           - code
+          - com.github.stsdc.monitor
           - containerd.io
           - curl
           - docker-ce
