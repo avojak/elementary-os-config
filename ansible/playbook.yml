@@ -73,6 +73,7 @@
           - docker-ce-cli
           - elementary-sdk
           - git
+          - libvala-0.48-dev
           - meson
           - net-tools
           - neofetch
