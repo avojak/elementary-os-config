@@ -9,6 +9,18 @@
       template:
         src: hostname.j2
         dest: /etc/hostname
+    - name: Update /etc/hosts IPv4 entry
+      become: yes
+      lineinfile:
+        path: /etc/hosts
+        regexp: '^127\.0\.0\.1'
+        line: 127.0.0.1 localhost {{ hostname }}
+    - name: Update /etc/hosts IPv6 entry
+      become: yes
+      lineinfile:
+        path: /etc/hosts
+        regexp: '^::1'
+        line: ::1 localhost {{ hostname }}
     - name: Create ~/.ssh directory
       file:
         path: "/home/{{ user_name }}/.ssh"
@@ -60,7 +72,6 @@
           - docker-ce
           - docker-ce-cli
           - elementary-sdk
-          - firefox
           - git
           - meson
           - net-tools
@@ -72,6 +83,17 @@
     - name: Install pip packages
       pip:
         name: psutil
+    - name: Clone vala-lint
+      git:
+        repo: "https://github.com/vala-lang/vala-lint.git"
+        dest: /tmp/vala-lint
+    - name: Build and install vala-lint
+      become: yes
+      shell: |
+        cd /tmp/vala-lint
+        meson build --prefix=/usr
+        cd build
+        sudo ninja install
 
     # Configure applications
     - name: Configure git
@@ -131,7 +153,7 @@
     user_group: avojak
     user_full_name: Andrew Vojak
     user_email_address: andrew.vojak@gmail.com
-    hostname: avojak-elementaryOS
+    hostname: elementaryOS
     users:
       - username: "{{ user_name }}"
         visual_studio_code_extensions:
@@ -141,3 +163,4 @@
           - asabil.meson
           - surajbarkale.ninja
           - ms-python.python
+          - samuelcolvin.jinjahtml
