@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 #if [ "$EUID" -ne 0 ]; then
 #  echo "Must run as root!"
 #  exit 1
@@ -30,6 +32,14 @@ if [[ "$HELP" -eq 1 ]]; then
   exit 0
 fi
 
+user_name=$(whoami)
+user_group=$user_name
+user_full_name=$(getent passwd "$user_name" | cut -d ':' -f 5 | cut -d ',' -f 1)
+user_email_address="andrew.vojak@gmail.com"
+hostname=$(hostname)
+
+ansible_extra_args="user_name=$user_name user_group=$user_group user_full_name=$user_full_name user_email_address=$user_email_address hostname=$hostname"
+
 # Install Ansible
 sudo apt install -y ansible
 
@@ -38,10 +48,14 @@ ansible-galaxy install -r ansible/requirements.yml
 
 if [[ "$VM_MODE" -eq 1 ]]; then
   echo "Running in VM mode..."
-  ansible-playbook ansible/vm-playbook.yml -i ansible/hosts
+  ansible-playbook ansible/vm-playbook.yml \
+      -i ansible/hosts \
+      -e "$ansible_extra_args"
 else
   echo "Running in non-VM mode..."
-  ansible-playbook ansible/playbook.yml -i ansible/hosts
+  ansible-playbook ansible/playbook.yml \
+      -i ansible/hosts \
+      -e "$ansible_extra_args"
 fi
 
 if [[ "$?" -eq 0 ]]; then

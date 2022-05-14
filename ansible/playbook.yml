@@ -58,6 +58,16 @@
       become: yes
       apt_repository:
         repo: ppa:stsdc/monitor
+    - name: Add Flathub flatpak remote
+      flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+    # - name: Add AppCenter flatpak remote
+    #   flatpak_remote:
+    #     name: appcenter
+    #     state: present
+    #     flatpakrepo_url: https://flatpak.elementary.io/repo.flatpakrepo
 
     # Install applications and packages
     - name: Install apt packages
@@ -73,7 +83,7 @@
           - docker-ce-cli
           - elementary-sdk
           - git
-          - libvala-0.48-dev
+          - libvala-dev
           - meson
           - net-tools
           - neofetch
@@ -81,6 +91,23 @@
           - vim
         state: present
         update_cache: yes
+    - name: Install flatpaks from AppCenter
+      flatpak:
+        name: "{{ item }}"
+        state: present
+        remote: appcenter
+        method: user
+      loop:
+        - com.github.alecaddd.sequeler
+        - com.github.cassidyjames.palette
+        - com.github.danrabbit.harvey
+        - com.github.danrabbit.lookbook
+    - name: Install flatpaks from Flathub
+      flatpak:
+        name: org.inkscape.Inkscape
+        state: present
+        remote: flathub
+        method: user
     - name: Install pip packages
       pip:
         name: psutil
@@ -110,11 +137,6 @@
         dest: "/home/{{ user_name }}/.vimrc"
         owner: "{{ user_name }}"
         group: "{{ user_group }}"
-    - name: Add Flathub remote
-      flatpak_remote:
-        name: flathub
-        state: present
-        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
     - name: Install VSCode extensions
       include_role:
         name: gantsign.visual-studio-code-extensions
@@ -128,13 +150,13 @@
         key: "/io/elementary/desktop/wingpanel/applications-menu/use-category"
         value: "true"
         state: present
-    - name: Use AM/PM date format (1)
+    - name: Use AM/PM date format (1) # TODO: This doesn't seem to actually persist
       become_user: "{{ user_name }}"
       dconf:
         key: "/org/gnome/desktop/interface/clock-format"
         value: "'12h'"
         state: present
-    - name: Use AM/PM date format (2)
+    - name: Use AM/PM date format (2) # TODO: This doesn't seem to actually persist
       become_user: "{{ user_name }}"
       dconf:
         key: "/io/elementary/desktop/wingpanel/datetime/clock-format"
@@ -150,11 +172,6 @@
         append: yes
 
   vars:
-    user_name: avojak
-    user_group: avojak
-    user_full_name: Andrew Vojak
-    user_email_address: andrew.vojak@gmail.com
-    hostname: elementaryOS
     users:
       - username: "{{ user_name }}"
         visual_studio_code_extensions:
