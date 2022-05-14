@@ -75,11 +75,6 @@
         name: flathub
         state: present
         flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
-    # - name: Add AppCenter flatpak remote
-    #   flatpak_remote:
-    #     name: appcenter
-    #     state: present
-    #     flatpakrepo_url: https://flatpak.elementary.io/repo.flatpakrepo
 
     # Install applications and packages
     - name: Install apt packages
