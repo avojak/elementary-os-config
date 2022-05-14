@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 name=elementary-os-config
 branch=master
 archive=$name.zip

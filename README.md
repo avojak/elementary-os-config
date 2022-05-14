@@ -3,8 +3,10 @@ This script is intended for me to configure an elementary OS workstation from a 
 Usage:
 
 ```bash
-$ ./run.sh [--vm-mode]
+$ bash <(wget -qO- https://raw.githubusercontent.com/avojak/elementary-os-config/master/download-and-run.sh)
 ```
+
+If you run into an issue during the Ansible portion, you can re-run just the `run.sh` script from the directory.
 
 TODO:
 
