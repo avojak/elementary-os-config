@@ -2,7 +2,19 @@
 - name: elementary OS Configuration
   gather_facts: true
   hosts: all
+
+  # TODO: This is not ideal since it will prompt every time - might be a way to leverage host facts?
+  vars_prompt:
+    - name: user_email_address
+      prompt: What's your email address?
+      private: no
+      when: user_email_address is not defined
+    
   tasks:
+    - name: Include variables
+      include_vars:
+        dir: vars
+
     # System configuration
     - name: Set hostname
       become: yes
@@ -73,22 +85,7 @@
     - name: Install apt packages
       become: yes
       apt:
-        pkg:
-          - apt-transport-https
-          - code
-          - com.github.stsdc.monitor
-          - containerd.io
-          - curl
-          - docker-ce
-          - docker-ce-cli
-          - elementary-sdk
-          - git
-          - libvala-dev
-          - meson
-          - net-tools
-          - neofetch
-          - python3-pip
-          - vim
+        pkg: "{{ apt_packages }}"
         state: present
         update_cache: yes
     - name: Install flatpaks from AppCenter
@@ -97,17 +94,14 @@
         state: present
         remote: appcenter
         method: user
-      loop:
-        - com.github.alecaddd.sequeler
-        - com.github.cassidyjames.palette
-        - com.github.danrabbit.harvey
-        - com.github.danrabbit.lookbook
+      loop: "{{ appcenter_flatpaks }}"
     - name: Install flatpaks from Flathub
       flatpak:
-        name: org.inkscape.Inkscape
+        name: "{{ item }}"
         state: present
         remote: flathub
         method: user
+      loop: "{{ flathub_flatpaks }}"
     - name: Install pip packages
       pip:
         name: psutil
@@ -170,15 +164,3 @@
         name: "{{ user_name }}"
         groups: docker
         append: yes
-
-  vars:
-    users:
-      - username: "{{ user_name }}"
-        visual_studio_code_extensions:
-          - prince781.vala
-          - ms-azuretools.vscode-docker
-          - mrorz.language-gettext
-          - asabil.meson
-          - surajbarkale.ninja
-          - ms-python.python
-          - samuelcolvin.jinjahtml

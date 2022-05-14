@@ -1,0 +1,17 @@
+---
+apt_packages:
+  - apt-transport-https
+  - code
+  - com.github.stsdc.monitor
+  - containerd.io
+  - curl
+  - docker-ce
+  - docker-ce-cli
+  - elementary-sdk
+  - git
+  - libvala-dev
+  - meson
+  - net-tools
+  - neofetch
+  - python3-pip
+  - vim

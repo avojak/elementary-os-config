@@ -32,13 +32,12 @@ if [[ "$HELP" -eq 1 ]]; then
   exit 0
 fi
 
+# Get these variables from the system rather than setting in Ansible variables
 user_name=$(whoami)
 user_group=$user_name
 user_full_name=$(getent passwd "$user_name" | cut -d ':' -f 5 | cut -d ',' -f 1)
-user_email_address="andrew.vojak@gmail.com"
 hostname=$(hostname)
-
-ansible_extra_args="user_name=$user_name user_group=$user_group user_full_name=$user_full_name user_email_address=$user_email_address hostname=$hostname"
+ansible_extra_args="user_name=$user_name user_group=$user_group user_full_name=$user_full_name hostname=$hostname"
 
 # Install Ansible
 sudo apt install -y ansible

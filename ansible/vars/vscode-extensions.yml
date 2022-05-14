@@ -1,1 +1,11 @@
 ---
+users:
+  - username: "{{ user_name }}"
+    visual_studio_code_extensions:
+      - prince781.vala
+      - ms-azuretools.vscode-docker
+      - mrorz.language-gettext
+      - asabil.meson
+      - surajbarkale.ninja
+      - ms-python.python
+      - samuelcolvin.jinjahtml
