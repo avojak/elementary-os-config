@@ -8,8 +8,8 @@
     - name: user_email_address
       prompt: What's your email address?
       private: no
-      when: user_email_address is not defined
-    
+      # when: user_email_address is not defined
+
   tasks:
     - name: Include variables
       include_vars:
