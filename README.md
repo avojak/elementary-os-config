@@ -11,3 +11,5 @@ If you run into an issue during the Ansible portion, you can re-run just the `ru
 TODO:
 
 [ ] Set scaling factor
+[ ] Set user photo (maybe Gravatar?)
+[ ] Update for elementary OS 7
