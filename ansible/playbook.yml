@@ -73,6 +73,7 @@
     - name: Add Flathub flatpak remote
       flatpak_remote:
         name: flathub
+        method: user
         state: present
         flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
 
