@@ -15,6 +15,12 @@
       include_vars:
         dir: vars
 
+    - name: Compute MD5 of user email address
+      shell: echo -n "{{ user_email_address }}" | md5sum | awk '{print $1}'
+      register: user_email_address_md5
+    - set_fact:
+        user_email_address_md5={{ user_email_address_md5.stdout }}
+
     # System configuration
     - name: Set hostname
       become: yes
@@ -43,7 +49,7 @@
         path: "/home/{{ user_name }}/.ssh/id_rsa"
         owner: "{{ user_name }}"
         group: "{{ user_group }}"
-      #notify: add github ssh key
+      # notify: add github ssh key
 
     # Application and package installation pre-requisites
     - name: Install Microsoft GPG key
@@ -64,12 +70,12 @@
     - name: Add Docker Debian repository
       become: yes
       apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
         state: present
-    - name: Add Monitor PPA
-      become: yes
-      apt_repository:
-        repo: ppa:stsdc/monitor
+    # - name: Add Monitor PPA
+    #   become: yes
+    #   apt_repository:
+    #     repo: ppa:stsdc/monitor
     - name: Add Flathub flatpak remote
       flatpak_remote:
         name: flathub
@@ -152,6 +158,14 @@
         key: "/io/elementary/desktop/wingpanel/datetime/clock-format"
         value: "'12h'"
         state: present
+    - name: Download Gravitar
+      become: yes
+      get_url:
+        url: "https://www.gravatar.com/avatar/{{ user_email_address_md5 }}?s=300&d=blank"
+        dest: "/var/lib/AccountsService/icons/{{ user_name }}"
+        mode: '0644'
+        group: root
+        owner: root
     
     # User configuration
     - name: Add user to docker group
