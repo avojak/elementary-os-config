@@ -2,35 +2,9 @@
 
 set -e
 
-#if [ "$EUID" -ne 0 ]; then
-#  echo "Must run as root!"
-#  exit 1
-#fi
-
-POSITIONAL=()
-while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
-    -h|--help)
-      HELP=1
-      shift
-      ;;
-    --vm-mode)
-      VM_MODE=1
-      shift
-      ;;
-    *)
-      HELP=0
-      VM_MODE=0
-      shift
-      ;;
-  esac
-done
-
-if [[ "$HELP" -eq 1 ]]; then
-  echo "usage: ./run.sh [--vm-mode]"
-  exit 0
-fi
+# Detect running in a virtual machine
+vm_mode=$(hostnamectl | grep Virtualization)
+vm_mode=$?
 
 # Get these variables from the system rather than setting in Ansible variables
 user_name=$(whoami)
@@ -45,7 +19,7 @@ sudo apt install -y ansible
 # Install Ansible Galaxy roles
 ansible-galaxy install -r ansible/requirements.yml
 
-if [[ "$VM_MODE" -eq 1 ]]; then
+if [[ "$vm_mode" -eq 0 ]]; then
   echo "Running in VM mode..."
   ansible-playbook ansible/vm-playbook.yml \
       -i ansible/hosts \
