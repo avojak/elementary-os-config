@@ -12,5 +12,4 @@ TODO:
 
 [ ] Set scaling factor
 [ ] Set user photo (maybe Gravatar?)
-[ ] Update for elementary OS 7
 [ ] Fix some stability issues (multiple branches for Flatpaks (stable, master), no match for apt packages with new Ubuntu base)
