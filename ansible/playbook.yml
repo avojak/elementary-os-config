@@ -84,10 +84,15 @@
         flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
 
     # Install applications and packages
+    - name: Ensure apt list dir exists
+      file:
+        path: /var/lib/apt/lists/
+        state: directory
+        mode: 0755
     - name: Install apt packages
       become: yes
       apt:
-        pkg: "{{ apt_packages }}"
+        name: "{{ apt_packages }}"
         state: present
         update_cache: yes
     - name: Install flatpaks from AppCenter
@@ -116,8 +121,17 @@
       shell: |
         cd /tmp/vala-lint
         meson build --prefix=/usr
-        cd build
-        sudo ninja install
+        sudo ninja -C build install
+    - name: Clone vala-language-server
+      git:
+        repo: "https://github.com/vala-lang/vala-language-server"
+        dest: /tmp/vala-language-server
+    - name: Build and install vala-language-server
+      become: yes
+      shell: |
+        cd /tmp/vala-language-server
+        meson build --prefix=/usr
+        sudo ninja -C build install
 
     # Configure applications
     - name: Configure git

@@ -2,7 +2,7 @@
 appcenter_flatpaks:
   - com.github.alecaddd.sequeler
   - com.github.cassidyjames.palette
-  - com.github.danrabbit.harvey
+  - com.github.danrabbit.harvey/x86_64/stable
   - com.github.danrabbit.lookbook
 flathub_flatpaks:
   - org.inkscape.Inkscape

@@ -2,7 +2,7 @@
 apt_packages:
   - apt-transport-https
   - code
-  # - com.github.stsdc.monitor
+  #- com.github.stsdc.monitor
   - containerd.io
   - curl
   - docker-ce
