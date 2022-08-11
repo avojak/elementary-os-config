@@ -3,23 +3,10 @@
   gather_facts: true
   hosts: all
 
-  # TODO: This is not ideal since it will prompt every time - might be a way to leverage host facts?
-  vars_prompt:
-    - name: user_email_address
-      prompt: What's your email address?
-      private: no
-      # when: user_email_address is not defined
-
   tasks:
     - name: Include variables
       include_vars:
         dir: vars
-
-    - name: Compute MD5 of user email address
-      shell: echo -n "{{ user_email_address }}" | md5sum | awk '{print $1}'
-      register: user_email_address_md5
-    - set_fact:
-        user_email_address_md5={{ user_email_address_md5.stdout }}
 
     # System configuration
     - name: Set hostname
@@ -89,12 +76,15 @@
         path: /var/lib/apt/lists/
         state: directory
         mode: 0755
+    - name: Update apt cache
+      become: yes
+      apt:
+        update_cache: yes
     - name: Install apt packages
       become: yes
       apt:
         name: "{{ apt_packages }}"
         state: present
-        update_cache: yes
     - name: Install flatpaks from AppCenter
       flatpak:
         name: "{{ item }}"
@@ -112,26 +102,40 @@
     - name: Install pip packages
       pip:
         name: psutil
+    - name: Check if vala-lint exists
+      stat:
+        path: /usr/bin/io.elementary.vala-lint
+      register: vala_lint_result
     - name: Clone vala-lint
       git:
         repo: "https://github.com/vala-lang/vala-lint.git"
         dest: /tmp/vala-lint
+      when: not vala_lint_result.stat.exists
     - name: Build and install vala-lint
       become: yes
       shell: |
         cd /tmp/vala-lint
         meson build --prefix=/usr
         sudo ninja -C build install
+        rm -rf /tmp/vala-lint
+      when: not vala_lint_result.stat.exists
+    - name: Check if vala-language-server exists
+      stat:
+        path: /usr/bin/vala-language-server
+      register: vala_language_server_result
     - name: Clone vala-language-server
       git:
         repo: "https://github.com/vala-lang/vala-language-server"
         dest: /tmp/vala-language-server
+      when: not vala_language_server_result.stat.exists
     - name: Build and install vala-language-server
       become: yes
       shell: |
         cd /tmp/vala-language-server
         meson build --prefix=/usr
         sudo ninja -C build install
+        rm -rf /tmp/vala-language-server
+      when: not vala_language_server_result.stat.exists
 
     # Configure applications
     - name: Configure git
@@ -160,6 +164,15 @@
         key: "/io/elementary/desktop/wingpanel/applications-menu/use-category"
         value: "true"
         state: present
+    - name: Disable automatic timezone
+      become_user: "{{ user_name }}"
+      dconf:
+        key: "/org/gnome/desktop/datetime/automatic-timezone"
+        value: "false"
+        state: present
+    - name: Set the timezone
+      command: "timedatectl set-timezone {{ timezone }}"
+      when: ansible_date_time.tz != '{{ timezone }}'
     - name: Use AM/PM date format (1) # TODO: This doesn't seem to actually persist
       become_user: "{{ user_name }}"
       dconf:
@@ -172,10 +185,10 @@
         key: "/io/elementary/desktop/wingpanel/datetime/clock-format"
         value: "'12h'"
         state: present
-    - name: Download Gravitar
+    - name: Download Gravitar # TODO: This doesn't seem to work anymore
       become: yes
       get_url:
-        url: "https://www.gravatar.com/avatar/{{ user_email_address_md5 }}?s=300&d=blank"
+        url: "https://www.gravatar.com/avatar/{{ user_gravatar }}?s=300&d=blank"
         dest: "/var/lib/AccountsService/icons/{{ user_name }}"
         mode: '0644'
         group: root

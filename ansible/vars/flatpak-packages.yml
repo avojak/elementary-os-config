@@ -1,8 +1,12 @@
 ---
 appcenter_flatpaks:
-  - com.github.alecaddd.sequeler
-  - com.github.cassidyjames.palette
-  - com.github.danrabbit.harvey/x86_64/stable
-  - com.github.danrabbit.lookbook
+  - com.github.alecaddd.sequeler//stable
+  - com.github.cassidyjames.palette//stable
+  - com.github.danrabbit.harvey//stable
+  - com.github.danrabbit.lookbook//stable
+  - com.github.dr_styki.screenrec//stable
+  - com.github.phoneybadger.picker//stable
+  - io.elementary.Platform//7
+  - io.elementary.Sdk//7
 flathub_flatpaks:
-  - org.inkscape.Inkscape
+  - org.inkscape.Inkscape//stable
